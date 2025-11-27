@@ -21,7 +21,8 @@ Facility Report Apps/              ← Folder utama di Google Drive
 
 * **Report**
   File spreadsheet yang menyimpan laporan berupa:
-    **Important** sheet name : **Reports**
+
+* **Important** sheet name : **Reports**
 
   * timestamp
   * facilityId
@@ -34,7 +35,7 @@ Facility Report Apps/              ← Folder utama di Google Drive
 
 * **tb_M_Facility**
   Menyimpan master facility:
-  **Important** sheet name : **Facilities**
+* **Important** sheet name : **Facilities**
 
   * facilityId
   * facilityName
@@ -42,7 +43,7 @@ Facility Report Apps/              ← Folder utama di Google Drive
 
 * **tb_M_Users**
   Menyimpan authorized users
-  **Important** sheet name : **Users**
+* **Important** sheet name : **Users**
 
   * username
   * password
