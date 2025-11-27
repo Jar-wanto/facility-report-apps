@@ -6,7 +6,6 @@ Aplikasi ini memerlukan struktur Google Drive sebagai berikut:
 Facility Report Apps/              ← Folder utama di Google Drive
 │
 ├── Evidence/                      ← Folder penyimpanan bukti foto
-│    └── Image Evidence/           ← Subfolder khusus untuk foto
 │
 ├── Report (Spreadsheet)           ← Sheet utama laporan fasilitas
 │
@@ -22,27 +21,29 @@ Facility Report Apps/              ← Folder utama di Google Drive
 
 * **Report**
   File spreadsheet yang menyimpan laporan berupa:
+    **Important** sheet name : **Reports**
 
-  * Timestamp
-  * Facility ID
-  * Facility Name
-  * Location
-  * Problem
-  * Photos
-  * Reporter
+  * timestamp
+  * facilityId
+  * facilityName
+  * location
+  * problem
+  * expectedCondition
+  * photosUrls
+  * status
 
 * **tb_M_Facility**
   Menyimpan master facility:
+  **Important** sheet name : **Facilities**
 
-  * ID
-  * Name
-  * Location
-  * Description
+  * facilityId
+  * facilityName
+  * location
 
 * **tb_M_Users**
-  Menyimpan authorized users:
+  Menyimpan authorized users
+  **Important** sheet name : **Users**
 
-  * User ID
-  * Name
-  * NIK / Employee ID
+  * username
+  * password
   * Role
