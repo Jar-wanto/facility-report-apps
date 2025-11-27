@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Facility Report Apps – Google Apps Script Project
 
 Aplikasi **Facility Report Apps** adalah sistem pelaporan fasilitas berbasis **Google Apps Script**, **Google Drive**, dan **Google Spreadsheet**.
@@ -74,4 +73,3 @@ Detail lengkap ada di `drive_structure.md`.
 =======
 # Facility-Report-Apps
 Simple Apps for Facility Reporting using Google Appscript.
->>>>>>> 1e9acee4f675928f231d47be2ba4224417dbe9ad
