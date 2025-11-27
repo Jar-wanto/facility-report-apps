@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    
+    .back-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      margin-top: 15px;
+      transition: background 0.3s;
+    }
+    
+    .back-button:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    .card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+    
+    #qr-reader {
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    
+    .scanner-status {
+      text-align: center;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    
+    .scanner-status.info {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .scanner-status.success {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+    
+    .scanner-status.error {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+    
+    .facility-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .facility-info.active {
+      display: block;
+    }
+    
+    .facility-info h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+    
+    .facility-detail {
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .facility-detail strong {
+      min-width: 120px;
+      color: #555;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 10px;
+      color: #333;
+      font-weight: 600;
+    }
+    
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .photo-upload {
+      border: 2px dashed #e0e0e0;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .photo-upload:hover {
+      border-color: #667eea;
+      background: #f8f9fa;
+    }
+    
+    .photo-upload input {
+      display: none;
+    }
+    
+    .photo-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .photo-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .photo-item img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    
+    .remove-photo {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #f5576c;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 1.2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .submit-button {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .submit-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+    
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      display: none;
+    }
+    
+    .loading.active {
+      display: block;
+    }
+    
+    .success-message {
+      background: #e8f5e9;
+      color: #388e3c;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .success-message.active {
+      display: block;
+    }
+    
+    /* Modal/Alert Styles */
+    .alert-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .alert-overlay.active {
+      display: flex;
+    }
+    
+    .alert-box {
+      background: white;
+      border-radius: 15px;
+      padding: 40px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .alert-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+    
+    .alert-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    
+    .alert-message {
+      color: #666;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    
+    .alert-button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    
+    .alert-button:hover {
+      transform: translateY(-2px);
+    }
+    
+    .alert-button.success {
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    }
+    
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 1.5em;
+      }
+      
+      .photo-preview {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📝 Report Facility Problem</h1>
+      <p>Scan QR code and describe the issue</p>
+      <a href="<?= ScriptApp.getService().getUrl() ?>" class="back-button">← Back to Home</a>
+    </div>
+    
+    <!-- QR Scanner Section -->
+    <div class="card" id="scannerCard">
+      <h2>Step 1: Scan Facility QR Code</h2>
+      <div class="scanner-status info" id="scannerStatus">
+        Click "Start Scanner" to scan the facility QR code
+      </div>
+      <div id="qr-reader"></div>
+      <button class="submit-button" onclick="startScanner()" id="startScanBtn">Start Scanner</button>
+    </div>
+    
+    <!-- Facility Info -->
+    <div class="facility-info" id="facilityInfo">
+      <h3>✅ Facility Identified</h3>
+      <div class="facility-detail">
+        <strong>Facility Name:</strong>
+        <span id="facilityName"></span>
+      </div>
+      <div class="facility-detail">
+        <strong>Location:</strong>
+        <span id="facilityLocation"></span>
+      </div>
+      <div class="facility-detail">
+        <strong>Facility ID:</strong>
+        <span id="facilityId"></span>
+      </div>
+    </div>
+    
+    <!-- Report Form -->
+    <div class="card" id="reportForm" style="display: none;">
+      <h2>Step 2: Describe the Problem</h2>
+      
+      <form onsubmit="handleSubmit(event)">
+        <div class="form-group">
+          <label for="problem">Problem Description *</label>
+          <textarea id="problem" required placeholder="Describe what's wrong or not working properly..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="expectedCondition">Expected Condition *</label>
+          <textarea id="expectedCondition" required placeholder="Describe how it should be working..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Upload Photos</label>
+          <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+            <div style="font-size: 3em; margin-bottom: 10px;">📷</div>
+            <div>Click to upload photos</div>
+            <div style="font-size: 0.9em; color: #777; margin-top: 5px;">You can select multiple images</div>
+            <input type="file" id="photoInput" accept="image/*" multiple onchange="handlePhotoSelect(event)">
+          </div>
+          <div class="photo-preview" id="photoPreview"></div>
+        </div>
+        
+        <button type="submit" class="submit-button" id="submitBtn">Submit Report</button>
+        
+        <div class="loading" id="loading">
+          <div>⏳ Submitting report...</div>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Alert Overlay -->
+  <div class="alert-overlay" id="alertOverlay">
+    <div class="alert-box">
+      <div class="alert-icon" id="alertIcon"></div>
+      <div class="alert-title" id="alertTitle"></div>
+      <div class="alert-message" id="alertMessage"></div>
+      <button class="alert-button" id="alertButton" onclick="closeAlert()">OK</button>
+    </div>
+  </div>
+  
+  <script>
+    let html5QrCode;
+    let facilityData = {};
+    let selectedPhotos = [];
+    
+    function startScanner() {
+      const scannerStatus = document.getElementById('scannerStatus');
+      const startBtn = document.getElementById('startScanBtn');
+      
+      scannerStatus.textContent = 'Initializing camera...';
+      startBtn.disabled = true;
+      
+      html5QrCode = new Html5Qrcode("qr-reader");
+      
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+      
+      html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        onScanSuccess
+      ).catch(err => {
+        scannerStatus.className = 'scanner-status error';
+        scannerStatus.textContent = 'Camera access denied or not available';
+        startBtn.disabled = false;
+      });
+      
+      scannerStatus.className = 'scanner-status info';
+      scannerStatus.textContent = 'Point camera at QR code...';
+    }
+    
+    function onScanSuccess(decodedText) {
+      html5QrCode.stop();
+      
+      const scannerStatus = document.getElementById('scannerStatus');
+      scannerStatus.className = 'scanner-status info';
+      scannerStatus.textContent = 'Looking up facility...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            facilityData = result;
+            
+            document.getElementById('facilityName').textContent = result.facilityName;
+            document.getElementById('facilityLocation').textContent = result.location;
+            document.getElementById('facilityId').textContent = result.facilityId;
+            
+            document.getElementById('facilityInfo').classList.add('active');
+            document.getElementById('reportForm').style.display = 'block';
+            document.getElementById('scannerCard').style.display = 'none';
+            
+            scannerStatus.className = 'scanner-status success';
+            scannerStatus.textContent = 'Facility found! Please fill out the form below.';
+          } else {
+            scannerStatus.className = 'scanner-status error';
+            scannerStatus.textContent = result.message + ' - Please try again';
+            document.getElementById('startScanBtn').disabled = false;
+          }
+        })
+        .withFailureHandler(function(error) {
+          scannerStatus.className = 'scanner-status error';
+          scannerStatus.textContent = 'Error: ' + error.message;
+          document.getElementById('startScanBtn').disabled = false;
+        })
+        .getFacilityByQRCode(decodedText);
+    }
+    
+    function handlePhotoSelect(event) {
+      const files = Array.from(event.target.files);
+      
+      files.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            selectedPhotos.push({
+              data: e.target.result,
+              name: file.name,
+              type: file.type
+            });
+            displayPhotos();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    function displayPhotos() {
+      const preview = document.getElementById('photoPreview');
+      preview.innerHTML = '';
+      
+      selectedPhotos.forEach((photo, index) => {
+        const div = document.createElement('div');
+        div.className = 'photo-item';
+        div.innerHTML = `
+          <img src="${photo.data}" alt="Photo ${index + 1}">
+          <button class="remove-photo" onclick="removePhoto(${index})" type="button">×</button>
+        `;
+        preview.appendChild(div);
+      });
+    }
+    
+    function removePhoto(index) {
+      selectedPhotos.splice(index, 1);
+      displayPhotos();
+    }
+    
+    function handleSubmit(event) {
+      event.preventDefault();
+      
+      const problem = document.getElementById('problem').value;
+      const expectedCondition = document.getElementById('expectedCondition').value;
+      const submitBtn = document.getElementById('submitBtn');
+      
+      submitBtn.disabled = true;
+      
+      // Show sending alert
+      showAlert('⏳', 'Sending Report', 'Please wait while we upload your report...', false);
+      
+      // Upload photos first
+      if (selectedPhotos.length > 0) {
+        uploadPhotosAndSubmit(problem, expectedCondition);
+      } else {
+        submitReport(problem, expectedCondition, '');
+      }
+    }
+    
+    function uploadPhotosAndSubmit(problem, expectedCondition) {
+      const photoUrls = [];
+      let uploadCount = 0;
+      
+      selectedPhotos.forEach((photo, index) => {
+        const base64Data = photo.data.split(',')[1];
+        
+        google.script.run
+          .withSuccessHandler(function(result) {
+            uploadCount++;
+            if (result.success) {
+              photoUrls.push(result.url);
+            }
+            
+            if (uploadCount === selectedPhotos.length) {
+              submitReport(problem, expectedCondition, photoUrls.join(', '));
+            }
+          })
+          .withFailureHandler(function(error) {
+            uploadCount++;
+            if (uploadCount === selectedPhotos.length) {
+              submitReport(problem, expectedCondition, photoUrls.join(', '));
+            }
+          })
+          .uploadPhoto(base64Data, photo.name, photo.type);
+      });
+    }
+    
+    function submitReport(problem, expectedCondition, photoUrls) {
+      const reportData = {
+        facilityId: facilityData.facilityId,
+        facilityName: facilityData.facilityName,
+        location: facilityData.location,
+        problem: problem,
+        expectedCondition: expectedCondition,
+        photoUrls: photoUrls
+      };
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            // Show success alert with OK button that redirects home
+            showAlert('✅', 'Success!', 'Your report has been submitted successfully and will be reviewed by the admin team.', true);
+          } else {
+            showAlert('❌', 'Error', 'Failed to submit report: ' + result.message, true);
+            document.getElementById('submitBtn').disabled = false;
+          }
+        })
+        .withFailureHandler(function(error) {
+          showAlert('❌', 'Error', 'Submission failed: ' + error.message, true);
+          document.getElementById('submitBtn').disabled = false;
+        })
+        .saveReport(reportData);
+    }
+    
+    function showAlert(icon, title, message, showButton) {
+      document.getElementById('alertIcon').textContent = icon;
+      document.getElementById('alertTitle').textContent = title;
+      document.getElementById('alertMessage').textContent = message;
+      
+      const alertButton = document.getElementById('alertButton');
+      if (showButton) {
+        alertButton.style.display = 'block';
+        if (icon === '✅') {
+          alertButton.classList.add('success');
+        } else {
+          alertButton.classList.remove('success');
+        }
+      } else {
+        alertButton.style.display = 'none';
+      }
+      
+      document.getElementById('alertOverlay').classList.add('active');
+    }
+    
+    function closeAlert() {
+      const isSuccess = document.getElementById('alertButton').classList.contains('success');
+      document.getElementById('alertOverlay').classList.remove('active');
+      
+      // If success, redirect to home after a short delay
+      if (isSuccess) {
+        setTimeout(function() {
+          const homeUrl = '<?= ScriptApp.getService().getUrl() ?>';
+          console.log('Redirecting to:', homeUrl);
+          window.top.location.href = homeUrl;
+        }, 300);
+      }
+    }
+  </script>
+</body>
+</html>
